@@ -30,10 +30,16 @@ telemetry, no network access and no "RAM booster".
 
 ## Why another cleaner?
 
-Most "PC cleaners" sell a feeling of speed. They trim the memory of running
-programs so a number in Task Manager goes down, delete Windows' Prefetch data
-so apps start slower, wipe browser caches every hour so pages load slower,
-and empty your Recycle Bin behind your back.
+Most "PC cleaners" sell a feeling of speed rather than free space. sweepkit
+started as a response to one of them, [G-CACHE](https://guldaltech.com/). Its
+site (as of September 2026) advertises resetting the working sets of
+background processes, deleting Prefetch, clearing browser caches and
+flushing DNS "to improve internet speed", permanently emptying the Recycle
+Bin, and repeating all of it silently in the background, for example every
+60 minutes. Each of those is in the
+[table below](#what-it-deliberately-does-not-do), with the reason sweepkit
+leaves it out. The same techniques are common across the whole category; the
+point is the techniques, not one project.
 
 sweepkit only does the part that holds up: it removes files that are
 genuinely left over, shows you exactly how much space that frees, and is

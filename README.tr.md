@@ -30,11 +30,16 @@ telemetri yok, ağ erişimi yok, "RAM hızlandırıcı" yok.
 
 ## Neden bir temizleyici daha?
 
-"PC temizleyicilerin" çoğu hız hissi satar. Görev Yöneticisi'ndeki bir sayı
-düşsün diye çalışan programların belleğini kırpar, programlar daha yavaş
-açılsın diye Windows'un Prefetch verisini siler, sayfalar daha yavaş yüklensin
-diye tarayıcı önbelleğini saatte bir temizler ve Geri Dönüşüm Kutusu'nu
-habersizce boşaltır.
+"PC temizleyicilerin" çoğu boş alandan çok hız hissi satar. sweepkit
+bunlardan birine, [G-CACHE](https://guldaltech.com/) adlı araca yanıt olarak
+başladı. Aracın sitesi (Eylül 2026 itibarıyla) arka plandaki programların
+çalışma kümelerini sıfırlamayı, Prefetch'i silmeyi, "internet hızını artırmak"
+için tarayıcı önbelleklerini ve DNS önbelleğini temizlemeyi, Geri Dönüşüm
+Kutusu'nu kalıcı olarak boşaltmayı ve tüm bunları arka planda, örneğin 60
+dakikada bir, sessizce tekrarlamayı öne çıkarıyor. Bunların her biri,
+sweepkit'in neden yapmadığıyla birlikte
+[aşağıdaki tabloda](#bilerek-yapmadıkları) yer alıyor. Bu teknikler
+kategorinin genelinde yaygın; mesele tek bir proje değil, tekniklerin kendisi.
 
 sweepkit yalnızca gerçekten işe yarayan kısmı yapar: gerçekten artık kalmış
 dosyaları kaldırır, ne kadar yer açılacağını tam olarak gösterir ve bir şeyi
