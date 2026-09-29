@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sweepkit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="mark-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#14b8a6"/>
+            <stop offset="1" stop-color="#0f5f59"/>
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="92" height="92" rx="22" fill="url(#mark-bg)"/>
+        <g stroke="#fff" stroke-width="10.4" stroke-linecap="round">
+          <path d="M22 40H60M30 54H78M22 68H52"/>
+        </g>
+        <path fill="#ccfbf1" d="M74 19 76.8 30 74 41 71.2 30ZM63 30 74 27.2 85 30 74 32.8Z"/>
+      </svg>
+      <span class="brand-name">sweepkit</span>
+      <span class="brand-version" id="version"></span>
+    </div>
+    <div class="top-actions">
+      <span class="badge" id="privilege"></span>
+      <div class="segmented" role="group" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="tr">TR</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="content">
+      <section class="summary" id="summary" aria-live="polite"></section>
+      <div class="banner" id="banner" hidden></div>
+      <div id="list"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span id="promise"></span>
+    <button type="button" class="link" id="source"></button>
+  </footer>
+
+  <dialog id="confirm" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <h2 id="confirm-title"></h2>
+      <p id="confirm-body"></p>
+      <ul class="confirm-items" id="confirm-items"></ul>
+      <div class="confirm-costs" id="confirm-costs"></div>
+      <div class="dialog-actions">
+        <button class="btn" value="cancel" id="confirm-cancel" autofocus></button>
+        <button class="btn danger" value="ok" id="confirm-ok"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

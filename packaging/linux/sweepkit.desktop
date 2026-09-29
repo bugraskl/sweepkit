@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=sweepkit
+GenericName=Disk Cleanup
+GenericName[tr]=Disk Temizliği
+Comment=See what is safe to delete and free up disk space
+Comment[tr]=Neyin güvenle silinebileceğini görün ve disk alanı açın
+Exec=sweepkit-gui
+Icon=sweepkit
+Terminal=false
+Categories=System;Utility;
+Keywords=clean;cache;disk;space;temp;junk;temizlik;önbellek;

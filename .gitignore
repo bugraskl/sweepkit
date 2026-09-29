@@ -1,0 +1,6 @@
+/build/bin/
+/dist/
+/frontend/wailsjs/
+/.claude/
+*.test
+*.exe

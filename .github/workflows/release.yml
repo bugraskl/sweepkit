@@ -1,0 +1,117 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: "1.27.x"
+  WAILS_VERSION: v2.16.0
+  VERSION_FLAG: -X github.com/bugraskl/sweepkit/internal/version.Version=${{ github.ref_name }}
+
+jobs:
+  cli:
+    name: Command-line tool
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go test ./internal/... ./cmd/...
+      - name: Build
+        run: |
+          for target in windows/amd64 windows/arm64 linux/amd64 linux/arm64; do
+            os="${target%/*}"; arch="${target#*/}"; ext=""
+            [ "$os" = windows ] && ext=".exe"
+            CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build -trimpath -ldflags "-s -w $VERSION_FLAG" \
+              -o "out/${os}_${arch}/sweepkit${ext}" ./cmd/sweepkit
+          done
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cli
+          path: out/
+
+  gui-windows:
+    name: Desktop app (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go install github.com/wailsapp/wails/v2/cmd/wails@${{ env.WAILS_VERSION }}
+      - name: Build
+        shell: bash
+        run: |
+          jq --arg v "${GITHUB_REF_NAME#v}" '.info.productVersion = $v' wails.json > wails.tmp && mv wails.tmp wails.json
+          for arch in amd64 arm64; do
+            wails build -clean -trimpath -skipbindings -platform "windows/$arch" -ldflags "-s -w $VERSION_FLAG" -o sweepkit-gui.exe
+            mkdir -p "out/windows_$arch"
+            mv build/bin/sweepkit-gui.exe "out/windows_$arch/"
+          done
+      - uses: actions/upload-artifact@v7
+        with:
+          name: gui-windows
+          path: out/
+
+  gui-linux:
+    name: Desktop app (Linux ${{ matrix.arch }})
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-22.04
+          - arch: arm64
+            runner: ubuntu-22.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+      - run: go install github.com/wailsapp/wails/v2/cmd/wails@${{ env.WAILS_VERSION }}
+      - name: Build
+        run: |
+          wails build -clean -trimpath -skipbindings -tags webkit2_41 -ldflags "-s -w $VERSION_FLAG" -o sweepkit-gui
+          mkdir -p "out/linux_${{ matrix.arch }}"
+          mv build/bin/sweepkit-gui "out/linux_${{ matrix.arch }}/"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: gui-linux-${{ matrix.arch }}
+          path: out/
+
+  publish:
+    name: Publish release
+    needs: [cli, gui-windows, gui-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          path: out/
+          merge-multiple: true
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.47.0
+      - run: bash scripts/package.sh "$GITHUB_REF_NAME"
+      - uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/*
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --title "sweepkit $GITHUB_REF_NAME" \
+            --notes-file stage/NOTES.md \
+            --verify-tag

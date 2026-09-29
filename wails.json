@@ -1,0 +1,19 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "sweepkit",
+  "outputfilename": "sweepkit-gui",
+  "frontend:dir": "frontend",
+  "frontend:install": "",
+  "frontend:build": "",
+  "assetdir": "frontend/dist",
+  "author": {
+    "name": "Buğra Şıkel"
+  },
+  "info": {
+    "companyName": "sweepkit",
+    "productName": "sweepkit",
+    "productVersion": "0.1.0",
+    "copyright": "Copyright © 2026 Buğra Şıkel. MIT License.",
+    "comments": "Honest disk cleanup for Windows and Linux"
+  }
+}

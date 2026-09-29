@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: Check formatting
+        if: runner.os == 'Linux'
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then echo "::error::run gofmt on: $unformatted"; exit 1; fi
+      - run: go vet ./internal/... ./cmd/...
+      - run: go test ./internal/... ./cmd/...
+      - name: Race detector
+        if: runner.os == 'Linux'
+        run: go test -race ./internal/... ./cmd/...
+
+  offline:
+    name: CLI links no network code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: Check dependencies
+        run: |
+          for goos in linux windows; do
+            found="$(GOOS=$goos go list -deps ./cmd/sweepkit | grep -Ex 'net|net/http|crypto/tls' || true)"
+            if [ -n "$found" ]; then
+              echo "::error::the $goos CLI depends on network packages: $found"
+              exit 1
+            fi
+          done
+          echo "The CLI does not link any networking package."
+
+  gui:
+    name: Desktop app (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            tags: ""
+          - os: ubuntu-22.04
+            tags: webkit2_41
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: Install GTK and WebKit
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+      - run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0
+      - name: Build
+        shell: bash
+        run: wails build -skipbindings ${{ matrix.tags && format('-tags {0}', matrix.tags) || '' }}
