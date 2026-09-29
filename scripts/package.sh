@@ -25,6 +25,10 @@ for arch in amd64 arm64; do
   chmod 0755 "stage/$name/sweepkit" "stage/$name/sweepkit-gui" "out/linux_${arch}/"*
   tar -C stage -czf "dist/$name.tar.gz" "$name"
 
+  # nfpm only expands variables in a few fields, so the binaries it packs
+  # always come from the same place.
+  rm -rf stage/pkg && mkdir -p stage/pkg
+  cp "stage/$name/sweepkit" "stage/$name/sweepkit-gui" stage/pkg/
   for packager in deb rpm archlinux; do
     VERSION="$version" ARCH="$arch" nfpm package --config packaging/linux/nfpm.yaml --packager "$packager" --target dist/
   done

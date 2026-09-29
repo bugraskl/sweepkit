@@ -1,4 +1,4 @@
-# Used by scripts/package.sh; VERSION and ARCH come from the environment.
+# Used by scripts/package.sh, which fills stage/pkg and sets VERSION and ARCH.
 name: sweepkit
 arch: ${ARCH}
 platform: linux
@@ -14,11 +14,11 @@ vendor: sweepkit
 homepage: https://github.com/bugraskl/sweepkit
 license: MIT
 contents:
-  - src: out/linux_${ARCH}/sweepkit
+  - src: stage/pkg/sweepkit
     dst: /usr/bin/sweepkit
     file_info:
       mode: 0755
-  - src: out/linux_${ARCH}/sweepkit-gui
+  - src: stage/pkg/sweepkit-gui
     dst: /usr/bin/sweepkit-gui
     file_info:
       mode: 0755
